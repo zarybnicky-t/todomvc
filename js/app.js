@@ -2,6 +2,7 @@
   const database = [];
   const main = document.querySelector('.main');
   const footer = document.querySelector('.footer');
+  let printed = 'all';
   footer.classList.add('hidden');
   main.classList.add('hidden');
 
@@ -27,6 +28,12 @@
     }
 
     database.forEach((x) => {
+      if (x.completed && printed === 'active') {
+        return;
+      }
+      if (!x.completed && printed === 'completed') {
+        return;
+      }
       const todo = document.createElement('li');
       todo.dataset.key = x.id;
       if (x.completed) {
@@ -39,17 +46,11 @@
       const input = document.createElement('input');
       input.type = 'checkbox';
       input.classList.add('toggle');
-      input.addEventListener('change', (e) => {
-        e.preventDefault();
+      input.checked = x.completed;
+      input.addEventListener('change', () => {
         input.parentNode.parentNode.classList.toggle('completed');
         const kee = input.parentNode.parentNode.dataset.key;
-        if (input.checked === false) {
-          input.checked = true;
-          database.find(elm => elm.id === kee).completed = true;
-        } else {
-          input.checked = false;
-          database.find(elm => elm.id === kee).completed = false;
-        }
+        database.find(elm => elm.id === kee).completed = input.checked;
         redraw();
       });
       div.appendChild(input);
@@ -94,6 +95,9 @@
       todo.appendChild(inp);
 
       todoList.appendChild(todo);
+
+      const todoCount = document.querySelector('.todo-count');
+      todoCount.firstElementChild.innerHTML = database.filter(elm => elm.completed !== true).length;
     });
   }
 
@@ -110,6 +114,39 @@
       newTodo.value = '';
       redraw();
     }
+  });
+
+  const clearCompleted = document.querySelector('.clear-completed');
+  clearCompleted.addEventListener('click', (e) => {
+    e.preventDefault();
+    database.forEach((x) => {
+      if (x.completed) {
+        const indx = database.findIndex(elm => elm.id === x.id);
+        database.splice(indx, 1);
+      }
+    });
+    redraw();
+  });
+
+  const allTodos = document.querySelector('a[href="#/all"]');
+  allTodos.addEventListener('click', (e) => {
+    e.preventDefault();
+    printed = 'all';
+    redraw();
+  });
+
+  const activeTodos = document.querySelector('a[href="#/active"]');
+  activeTodos.addEventListener('click', (e) => {
+    e.preventDefault();
+    printed = 'active';
+    redraw();
+  });
+
+  const completedTodos = document.querySelector('a[href="#/completed"]');
+  completedTodos.addEventListener('click', (e) => {
+    e.preventDefault();
+    printed = 'completed';
+    redraw();
   });
 
 //  document.querySelectorAll('.todo-list li label').forEach((elem) => {
