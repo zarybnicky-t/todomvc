@@ -98,6 +98,10 @@
 
       const todoCount = document.querySelector('.todo-count');
       todoCount.firstElementChild.innerHTML = database.filter(elm => elm.completed !== true).length;
+
+      document.querySelector('a[href="#/all"]').classList.toggle('selected', printed === 'all');
+      document.querySelector('a[href="#/active"]').classList.toggle('selected', printed === 'active');
+      document.querySelector('a[href="#/completed"]').classList.toggle('selected', printed === 'completed');
     });
   }
 
@@ -119,7 +123,7 @@
   const clearCompleted = document.querySelector('.clear-completed');
   clearCompleted.addEventListener('click', (e) => {
     e.preventDefault();
-    database.forEach((x) => {
+    database.forEach((x) => { //filter
       if (x.completed) {
         const indx = database.findIndex(elm => elm.id === x.id);
         database.splice(indx, 1);
